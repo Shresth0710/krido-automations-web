@@ -1,95 +1,111 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Mail, TrendingUp, Workflow, Bot, MessageSquare, Sparkles, Send, User, AtSign, Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import {
+  Zap, Mail, TrendingUp, Workflow, Bot, MessageSquare,
+  Sparkles, Send, User, AtSign, Menu, X, ArrowRight,
+  ChevronLeft, ChevronRight, CheckCircle2, Star, FolderOpen
+} from 'lucide-react';
+import { testimonials, projects, featuredProjectIds } from './data';
 
 export default function KridoAutomations() {
-  const [activeCard, setActiveCard] = useState(null);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    automation: ''
-  });
+  const [scrolled, setScrolled] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', automation: '' });
+  const [formStatus, setFormStatus] = useState(null); // null | 'sending' | 'success' | 'error'
 
+  // Navbar scroll effect
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % 3);
-    }, 5000);
-    return () => clearInterval(interval);
+    const onScroll = () => setScrolled(window.scrollY > 30);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Testimonial auto-rotate
+  useEffect(() => {
+    const t = setInterval(() => setCurrentTestimonial(p => (p + 1) % testimonials.length), 6000);
+    return () => clearInterval(t);
+  }, []);
+
+  // Scroll fade-in observer
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      }),
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll('.fade-in-up').forEach(el => obs.observe(el));
+    return () => obs.disconnect();
   }, []);
 
   const services = [
     {
-      icon: <Mail className="w-10 h-10" />,
+      icon: <Mail className="w-6 h-6" />,
       title: "Email Automation",
-      description: "Smart email campaigns and follow-ups that convert leads automatically.",
-      gradient: "from-purple-500 to-pink-500"
+      description: "Smart email campaigns, follow-up sequences, and lead nurturing — all running automatically while you sleep.",
+      tags: ["Campaigns", "Sequences", "CRM Sync"],
+      gradient: "from-violet-600 to-purple-700"
     },
     {
-      icon: <Workflow className="w-10 h-10" />,
+      icon: <Workflow className="w-6 h-6" />,
       title: "Workflow Automation",
-      description: "Streamline repetitive tasks from data entry to multi-step operations.",
-      gradient: "from-blue-500 to-cyan-500"
+      description: "Connect your tools and eliminate manual work. From data entry to complex multi-step ops across every platform.",
+      tags: ["Zapier", "Make", "n8n"],
+      gradient: "from-violet-700 to-indigo-700"
     },
     {
-      icon: <TrendingUp className="w-10 h-10" />,
+      icon: <TrendingUp className="w-6 h-6" />,
       title: "SEO & Marketing",
-      description: "Automated content distribution, social posting, and analytics reporting.",
-      gradient: "from-orange-500 to-red-500"
+      description: "Automated content distribution, social scheduling, analytics reporting, and multi-channel marketing flows.",
+      tags: ["Social", "Analytics", "Content"],
+      gradient: "from-purple-600 to-violet-800"
     },
     {
-      icon: <Bot className="w-10 h-10" />,
+      icon: <Bot className="w-6 h-6" />,
       title: "Custom AI Agents",
-      description: "AI agents trained on your data for your specific business needs.",
-      gradient: "from-green-500 to-emerald-500"
+      description: "AI agents fine-tuned on your data. Built for your industry, your terminology, your specific business logic.",
+      tags: ["GPT-4", "Claude", "Fine-tuned"],
+      gradient: "from-violet-800 to-purple-900"
     },
     {
-      icon: <MessageSquare className="w-10 h-10" />,
+      icon: <MessageSquare className="w-6 h-6" />,
       title: "Voice & Chat Bots",
-      description: "24/7 conversational agents for support and lead qualification.",
-      gradient: "from-violet-500 to-purple-500"
+      description: "24/7 conversational agents for support, lead qualification, and booking — no human intervention needed.",
+      tags: ["WhatsApp", "Web", "Voice"],
+      gradient: "from-indigo-700 to-violet-700"
     },
     {
-      icon: <Zap className="w-10 h-10" />,
+      icon: <Zap className="w-6 h-6" />,
       title: "Custom Automations",
-      description: "If you're clicking it twice, we can automate it. Any repetitive task, solved.",
-      gradient: "from-yellow-500 to-orange-500"
+      description: "If you're clicking it more than twice, we'll automate it. Any repetitive task, any tool, any complexity.",
+      tags: ["Any Stack", "API", "No-code"],
+      gradient: "from-violet-600 to-indigo-800"
     }
   ];
 
-  const testimonials = [
-    {
-      type: 'text',
-      content: "Krido Automations transformed our entire sales process. What used to take our team 15 hours a week now runs automatically. The ROI was visible within the first month.",
-      author: "Sarah Mitchell",
-      role: "CEO, TechFlow Solutions",
-      company: "TechFlow"
-    },
-    {
-      type: 'video',
-      videoId: 'YOUR_YOUTUBE_VIDEO_ID',
-      author: "Michael Chen",
-      role: "Operations Director",
-      company: "DataSync Pro"
-    },
-    {
-      type: 'text',
-      content: "We needed custom AI workflows that actually understood our industry. Krido delivered beyond expectations. Their automation saved us $50K annually in operational costs.",
-      author: "Jennifer Rodriguez",
-      role: "Founder, Marketing Dynamics",
-      company: "Marketing Dynamics"
-    }
-  ];
+  // Featured projects are driven by data.js — just change featuredProjectIds there
+  const featuredProjects = featuredProjectIds
+    .map(id => projects.find(p => p.id === id))
+    .filter(Boolean)
+    .map(p => ({
+      title: p.title,
+      client: p.client,
+      category: p.category,
+      result: `${p.stat1.value} ${p.stat1.label}`,
+      gradient: p.gradient,
+    }));
 
   const stats = [
-    { number: "10+", label: "Clients" },
-    { number: "50+", label: "Workflows Created" },
-    { number: "100%", label: "Client Satisfaction" },
-    { number: "1000+", label: "Hours Saved" }
+    { number: "10+", label: "Clients Served", sub: "and growing" },
+    { number: "50+", label: "Workflows Deployed", sub: "across industries" },
+    { number: "100%", label: "Satisfaction Rate", sub: "no exceptions" },
+    { number: "1000+", label: "Hours Saved", sub: "for our clients" }
   ];
 
   const navItems = [
     { name: "Services", id: "services" },
+    { name: "Results", id: "stats" },
     { name: "Testimonials", id: "testimonials" },
     { name: "Contact", id: "contact" }
   ];
@@ -99,172 +115,237 @@ export default function KridoAutomations() {
       alert('Please fill in your name and email.');
       return;
     }
-
+    setFormStatus('sending');
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           access_key: '6246a59b-ac1a-4ea4-9118-92b7c68c03c5',
           name: formData.name,
           email: formData.email,
-          message: formData.automation || 'No automation details provided',
-          subject: 'New Automation Inquiry - Krido Automations'
+          message: formData.automation || 'No details provided.',
+          subject: 'New Automation Inquiry — Krido Automations'
         })
       });
-
-      const data = await response.json();
-
+      const data = await res.json();
       if (data.success) {
-        alert('Thank you! We will contact you within 24 hours.');
+        setFormStatus('success');
         setFormData({ name: '', email: '', automation: '' });
       } else {
-        throw new Error('Form submission failed');
+        setFormStatus('error');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Something went wrong. Please try emailing us directly.');
+    } catch {
+      setFormStatus('error');
     }
   };
 
-  const scrollToSection = (id) => {
+  const scrollTo = id => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setMenuOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"
-             style={{ animationDelay: '0s', animationDuration: '7s' }}></div>
-        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"
-             style={{ animationDelay: '2s', animationDuration: '9s' }}></div>
-        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"
-             style={{ animationDelay: '4s', animationDuration: '8s' }}></div>
+    <div className="min-h-screen bg-[#050508] text-white overflow-x-hidden noise-overlay">
+
+      {/* ── Animated Background Orbs ── */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="orb-1 absolute top-[-10%] left-[10%] w-[600px] h-[600px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(109,40,217,0.18) 0%, transparent 70%)' }} />
+        <div className="orb-2 absolute top-[30%] right-[5%] w-[500px] h-[500px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.14) 0%, transparent 70%)' }} />
+        <div className="orb-3 absolute bottom-[10%] left-[30%] w-[500px] h-[500px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(91,21,182,0.12) 0%, transparent 70%)' }} />
       </div>
 
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6 backdrop-blur-lg bg-black/30 border-b border-white/10">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-8 h-8 text-purple-400" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-              Krido Automations
+      {/* ── Grid Background ── */}
+      <div className="fixed inset-0 grid-bg pointer-events-none z-0 opacity-60" />
+
+      {/* ══════════════════════════════
+              NAVIGATION
+         ══════════════════════════════ */}
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+        ? 'bg-[#07070f]/90 backdrop-blur-xl border-b border-violet-500/10 shadow-lg shadow-black/40'
+        : 'bg-transparent'
+        }`}>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          {/* Logo */}
+          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center glow-violet-sm">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-lg font-semibold tracking-tight">
+              <span className="gradient-text-bright">Krido</span>
+              <span className="text-white/80"> Automations</span>
             </span>
           </div>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-6">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className="text-gray-300 hover:text-white transition-colors duration-200 font-medium"
-              >
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-8">
+            {navItems.map(item => (
+              <button key={item.id} onClick={() => scrollTo(item.id)}
+                className="nav-link text-sm text-gray-400 hover:text-white transition-colors duration-200 font-medium">
                 {item.name}
               </button>
             ))}
+            <Link to="/projects"
+              className="nav-link text-sm text-gray-400 hover:text-white transition-colors duration-200 font-medium flex items-center gap-1.5">
+              <FolderOpen className="w-3.5 h-3.5" /> Our Work
+            </Link>
+            <button onClick={() => scrollTo('contact')}
+              className="px-5 py-2 text-sm font-semibold rounded-lg bg-violet-600 hover:bg-violet-500 transition-all duration-200 glow-violet-sm">
+              Get Started
+            </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden p-2 text-white"
-          >
-            {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {/* Mobile Toggle */}
+          <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 text-gray-300 hover:text-white">
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
 
-        {/* Mobile Menu Dropdown */}
+        {/* Mobile Menu */}
         {menuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-lg border-b border-white/10 py-4">
-            <div className="flex flex-col gap-4 px-6">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className="text-gray-300 hover:text-white transition-colors duration-200 font-medium text-left"
-                >
+          <div className="md:hidden bg-[#09090f]/98 backdrop-blur-xl border-t border-violet-500/10 px-6 py-5">
+            <div className="flex flex-col gap-4">
+              {navItems.map(item => (
+                <button key={item.id} onClick={() => scrollTo(item.id)}
+                  className="text-gray-300 hover:text-white text-left font-medium transition-colors">
                   {item.name}
                 </button>
               ))}
+              <Link to="/projects" onClick={() => setMenuOpen(false)}
+                className="text-gray-300 hover:text-white font-medium flex items-center gap-1.5 transition-colors">
+                <FolderOpen className="w-4 h-4" /> Our Work
+              </Link>
+              <button onClick={() => scrollTo('contact')}
+                className="mt-2 px-5 py-2.5 rounded-lg bg-violet-600 font-semibold text-sm text-white">
+                Get Started
+              </button>
             </div>
           </div>
         )}
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative z-10 px-6 pt-32 pb-24">
-        <div className="max-w-7xl mx-auto text-center">
-          {/* Hero Text - Centered */}
-          <div className="max-w-4xl mx-auto mb-16">
-            <h1 className="text-7xl md:text-9xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                Automate
-              </span>
-              <br />
-              <span className="text-white">Anything</span>
-            </h1>
+      {/* ══════════════════════════════
+                  HERO
+         ══════════════════════════════ */}
+      <section className="relative z-10 px-6 pt-36 pb-28">
+        <div className="max-w-6xl mx-auto text-center">
 
-            <p className="text-2xl md:text-3xl text-gray-300 mb-10 font-medium">
-              Custom-built workflows for companies and individuals.
-            </p>
-
-            <div className="p-8 bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-2xl mb-10 text-left max-w-3xl mx-auto">
-              <p className="text-gray-300 text-lg leading-relaxed">
-                <span className="text-purple-400 font-semibold">Tired of the AI hype?</span> You're not alone. Everyone talks about AI transformation, but few businesses can actually implement it effectively.
-                <br /><br />
-                The missing piece? <span className="text-pink-400 font-semibold">Custom workflows.</span> Generic AI models aren't enough. You need solutions built specifically for your business, leveraging cutting-edge tools to solve your unique challenges.
-                <br /><br />
-                That's where we come in. We build automation systems that actually work for your business.
-              </p>
-            </div>
+          <div className="fade-in-up mb-6 flex justify-center">
+            <span className="tag-pill">
+              <Zap className="w-3 h-3 text-violet-400" />
+              AI-Powered Business Automation
+            </span>
           </div>
 
-          {/* Stats - Below text */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {stats.map((stat, index) => (
-              <div key={index} className="p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300">
-                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                  {stat.number}
-                </div>
-                <div className="text-gray-400">{stat.label}</div>
-              </div>
-            ))}
+          <h1 className="fade-in-up text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight leading-none mb-6"
+            style={{ fontFamily: "'Space Grotesk', sans-serif", transitionDelay: '0.1s' }}>
+            <span className="gradient-text-bright">Automate</span>
+            <span className="text-white"> the</span>
+            <br />
+            <span className="text-white">Repetitive.</span>
+            <br />
+            <span className="gradient-text" style={{ fontSize: '0.6em' }}>Scale the Human.</span>
+          </h1>
+
+          <p className="fade-in-up text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed"
+            style={{ transitionDelay: '0.15s' }}>
+            Custom-built automation workflows for businesses that want to move faster,
+            cut costs, and focus on what actually matters.
+          </p>
+
+          <div className="fade-in-up flex flex-col sm:flex-row gap-4 justify-center mb-20"
+            style={{ transitionDelay: '0.2s' }}>
+            <button onClick={() => scrollTo('contact')}
+              className="btn-primary px-8 py-3.5 rounded-xl bg-violet-600 hover:bg-violet-500 font-semibold text-base transition-all duration-200 flex items-center justify-center gap-2">
+              Start Automating <ArrowRight className="w-4 h-4" />
+            </button>
+            <button onClick={() => scrollTo('services')}
+              className="px-8 py-3.5 rounded-xl border border-violet-500/30 hover:border-violet-400/60 bg-white/[0.02] hover:bg-white/[0.05] font-semibold text-base text-gray-300 hover:text-white transition-all duration-200">
+              See Our Services
+            </button>
+          </div>
+
+          {/* Hero Description Box */}
+          <div className="fade-in-up max-w-3xl mx-auto rounded-2xl border border-violet-500/15 bg-[#0c0c18]/60 backdrop-blur-sm p-8 text-left"
+            style={{ transitionDelay: '0.25s' }}>
+            <p className="text-gray-300 text-base leading-loose">
+              <span className="text-violet-300 font-semibold">Tired of the AI hype with no real results?</span>
+              {' '}You're not alone. Every business is told to "use AI" — but few actually implement it in a way that works.
+              <br /><br />
+              The gap isn't the technology. It's the <span className="text-white font-semibold">custom workflow layer</span> between generic AI tools and your actual business processes.
+              That's exactly what we build.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Services Section - Grid Layout */}
-      <section id="services" className="relative z-10 px-6 py-16">
+      {/* ══════════════════════════════
+                  STATS
+         ══════════════════════════════ */}
+      <section id="stats" className="relative z-10 px-6 py-20">
+        <div className="violet-divider max-w-7xl mx-auto mb-20" />
+        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+          {stats.map((stat, i) => (
+            <div key={i} className="fade-in-up text-center p-6 rounded-2xl border border-violet-500/10 bg-[#0c0c18]/40 hover:border-violet-400/25 hover:bg-violet-950/20 transition-all duration-300"
+              style={{ transitionDelay: `${i * 0.08}s` }}>
+              <div className="shimmer-text text-4xl md:text-5xl font-bold mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                {stat.number}
+              </div>
+              <div className="text-white text-sm font-semibold mb-0.5">{stat.label}</div>
+              <div className="text-gray-600 text-xs">{stat.sub}</div>
+            </div>
+          ))}
+        </div>
+        <div className="violet-divider max-w-7xl mx-auto mt-20" />
+      </section>
+
+      {/* ══════════════════════════════
+                SERVICES
+         ══════════════════════════════ */}
+      <section id="services" className="relative z-10 px-6 py-20">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-3">What We Automate</h2>
-            <p className="text-lg text-gray-400">From simple tasks to complex AI workflows, we've got you covered</p>
+          <div className="text-center mb-16 fade-in-up">
+            <span className="tag-pill mb-4 inline-flex">What We Build</span>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              Every Automation
+              <span className="gradient-text-bright"> You Need</span>
+            </h2>
+            <p className="text-gray-500 text-lg max-w-xl mx-auto">
+              From simple task automation to sophisticated multi-agent AI systems — we cover it all.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {services.map((service, i) => (
               <div
-                key={index}
-                onMouseEnter={() => setActiveCard(index)}
-                onMouseLeave={() => setActiveCard(null)}
-                className={`group relative p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl transition-all duration-500 cursor-pointer ${
-                  activeCard === index ? 'scale-105 bg-white/10 shadow-2xl shadow-purple-500/20' : ''
-                }`}
+                key={i}
+                className="fade-in-up group relative p-7 rounded-2xl border border-white/5 bg-[#0c0c18]/50 backdrop-blur-sm cursor-pointer overflow-hidden transition-all duration-400 hover:border-violet-500/25 hover:bg-[#10101e]/70"
+                style={{ transitionDelay: `${i * 0.07}s` }}
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-10 rounded-3xl transition-opacity duration-500`}></div>
+                {/* Hover glow */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-[0.06] transition-opacity duration-500 rounded-2xl`} />
 
-                <div className="relative text-center">
-                  <div className={`inline-flex p-4 bg-gradient-to-br ${service.gradient} rounded-2xl mb-6 transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                {/* Top accent line */}
+                <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${service.gradient} opacity-0 group-hover:opacity-60 transition-opacity duration-400`} />
+
+                <div className="relative">
+                  <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
                     {service.icon}
                   </div>
 
-                  <h3 className="text-2xl font-bold mb-3">{service.title}</h3>
-                  <p className="text-gray-400 leading-relaxed">{service.description}</p>
+                  <h3 className="text-lg font-semibold mb-2 text-white group-hover:text-violet-200 transition-colors">{service.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed mb-5">{service.description}</p>
+
+                  <div className="flex flex-wrap gap-2">
+                    {service.tags.map((tag, j) => (
+                      <span key={j} className="text-xs px-2.5 py-0.5 rounded-full border border-violet-500/20 bg-violet-500/5 text-violet-400/80">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
@@ -272,169 +353,261 @@ export default function KridoAutomations() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section id="testimonials" className="relative z-10 px-6 py-20 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent">
+      {/* ══════════════════════════════
+              TESTIMONIALS
+         ══════════════════════════════ */}
+      <section id="testimonials" className="relative z-10 px-6 py-24">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-3">What Our Clients Say</h2>
-            <p className="text-lg text-gray-400">Real results from real businesses</p>
+          <div className="text-center mb-16 fade-in-up">
+            <span className="tag-pill mb-4 inline-flex">Social Proof</span>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              Trusted by
+              <span className="gradient-text-bright"> Real Businesses</span>
+            </h2>
+            <p className="text-gray-500 text-lg">Don't take our word for it — here's what our clients say.</p>
           </div>
 
-          <div className="relative max-w-5xl mx-auto mb-20">
-            {/* Testimonial Cards Container */}
-            <div className="relative h-[500px] md:h-[450px]">
-              {testimonials.map((testimonial, index) => (
-                <div
-                  key={index}
-                  className={`absolute top-0 left-0 right-0 transition-all duration-700 ${
-                    index === currentTestimonial
-                      ? 'opacity-100 scale-100 z-10'
-                      : 'opacity-0 scale-95 pointer-events-none z-0'
-                  }`}
+          {/* Testimonial Carousel */}
+          <div className="relative max-w-3xl mx-auto fade-in-up">
+            <div className="relative overflow-hidden" style={{ minHeight: '280px' }}>
+              {testimonials.map((t, i) => (
+                <div key={i}
+                  className={`absolute inset-0 transition-all duration-700 testimonial-card ${i === currentTestimonial ? 'opacity-100 translate-y-0 z-10' : 'opacity-0 translate-y-4 z-0 pointer-events-none'
+                    }`}
                 >
-                  {testimonial.type === 'video' ? (
-                    <div className="p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl">
-                      <div className="w-full max-w-2xl mx-auto aspect-video rounded-2xl overflow-hidden mb-6 border border-white/20">
-                        <iframe
-                          width="100%"
-                          height="100%"
-                          src={`https://www.youtube.com/embed/${testimonial.videoId}`}
-                          title="Client Testimonial Video"
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          className="w-full h-full"
-                        />
+                  <div className="p-8 md:p-10 rounded-2xl border border-violet-500/15 bg-[#0c0c18]/70 backdrop-blur-sm">
+                    {/* Stars */}
+                    <div className="flex gap-1 mb-5">
+                      {Array.from({ length: t.rating }).map((_, si) => (
+                        <Star key={si} className="w-4 h-4 text-violet-400 fill-violet-400" />
+                      ))}
+                    </div>
+
+                    <p className="text-gray-200 text-lg leading-relaxed mb-7 italic">
+                      "{t.content}"
+                    </p>
+
+                    <div className="flex items-center gap-4 border-t border-white/[0.06] pt-5">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-600 to-purple-800 flex items-center justify-center text-sm font-bold text-white shrink-0">
+                        {t.author.charAt(0)}
                       </div>
-                      <div className="text-center">
-                        <p className="text-xl font-semibold text-white">{testimonial.author}</p>
-                        <p className="text-purple-400">{testimonial.role}</p>
-                        <p className="text-gray-500 text-sm">{testimonial.company}</p>
+                      <div>
+                        <p className="text-white font-semibold text-sm">{t.author}</p>
+                        <p className="text-gray-500 text-xs">{t.role}{t.company ? ` · ${t.company}` : ''}</p>
                       </div>
                     </div>
-                  ) : (
-                    <div className="p-8 md:p-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl text-center">
-                      <p className="text-xl md:text-2xl text-gray-200 leading-relaxed mb-8 max-w-3xl mx-auto">
-                        "{testimonial.content}"
-                      </p>
-                      <div className="border-t border-white/20 pt-6">
-                        <p className="text-xl font-semibold text-white mb-1">{testimonial.author}</p>
-                        <p className="text-purple-400 mb-1">{testimonial.role}</p>
-                        <p className="text-gray-500 text-sm">{testimonial.company}</p>
-                      </div>
-                    </div>
-                  )}
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Navigation Dots */}
-            <div className="flex justify-center gap-3 mt-8">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`transition-all duration-300 rounded-full ${
-                    index === currentTestimonial
-                      ? 'w-12 h-3 bg-gradient-to-r from-purple-600 to-pink-600'
-                      : 'w-3 h-3 bg-white/30 hover:bg-white/50'
-                  }`}
-                />
-              ))}
+            {/* Navigation */}
+            <div className="flex items-center justify-between mt-8">
+              <button onClick={() => setCurrentTestimonial(p => (p - 1 + testimonials.length) % testimonials.length)}
+                className="p-2.5 rounded-xl border border-violet-500/20 bg-violet-500/5 hover:bg-violet-500/15 text-violet-400 hover:text-violet-300 transition-all duration-200">
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <div className="flex gap-2">
+                {testimonials.map((_, i) => (
+                  <button key={i} onClick={() => setCurrentTestimonial(i)}
+                    className={`rounded-full transition-all duration-300 ${i === currentTestimonial
+                      ? 'w-8 h-2.5 bg-violet-500'
+                      : 'w-2.5 h-2.5 bg-white/15 hover:bg-white/30'
+                      }`}
+                  />
+                ))}
+              </div>
+
+              <button onClick={() => setCurrentTestimonial(p => (p + 1) % testimonials.length)}
+                className="p-2.5 rounded-xl border border-violet-500/20 bg-violet-500/5 hover:bg-violet-500/15 text-violet-400 hover:text-violet-300 transition-all duration-200">
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Contact Form Section */}
-      <section id="contact" className="relative z-10 px-6 py-20">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative p-8 md:p-12 bg-gradient-to-br from-purple-600/20 via-pink-600/20 to-blue-600/20 backdrop-blur-sm border border-white/20 rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 opacity-10"></div>
+      {/* ══════════════════════════════
+             OUR WORK TEASER
+         ══════════════════════════════ */}
+      <section className="relative z-10 px-6 py-24">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12 fade-in-up">
+            <div>
+              <span className="tag-pill mb-4 inline-flex">
+                <FolderOpen className="w-3 h-3 text-violet-400" />
+                Featured Work
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                What We've <span className="gradient-text-bright">Built</span>
+              </h2>
+            </div>
+            <Link to="/projects"
+              className="flex items-center gap-2 text-violet-400 hover:text-violet-300 font-medium text-sm shrink-0 transition-colors">
+              View all projects <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {featuredProjects.map((proj, i) => (
+              <div key={i}
+                className="fade-in-up group relative rounded-2xl border border-white/[0.07] bg-[#0c0c18]/50 overflow-hidden hover:border-violet-500/25 transition-all duration-400 cursor-pointer"
+                style={{ transitionDelay: `${i * 0.08}s` }}
+              >
+                {/* Top gradient bar */}
+                <div className={`h-1.5 bg-gradient-to-r ${proj.gradient}`} />
+
+                <div className="p-6">
+                  <span className="text-[11px] text-violet-400/70 font-medium uppercase tracking-wider">{proj.category}</span>
+                  <h3 className="text-base font-semibold text-white mt-2 mb-1 leading-snug group-hover:text-violet-100 transition-colors">
+                    {proj.title}
+                  </h3>
+                  <p className="text-gray-600 text-xs mb-5">{proj.client}</p>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-white/[0.05]">
+                    <div className="text-xs text-gray-500">
+                      <span className="text-violet-300 font-semibold">{proj.result}</span>
+                    </div>
+                    <div className="w-7 h-7 rounded-lg border border-violet-500/20 bg-violet-500/5 flex items-center justify-center group-hover:bg-violet-500/15 transition-all duration-200">
+                      <ArrowRight className="w-3.5 h-3.5 text-violet-400" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-10 fade-in-up">
+            <Link to="/projects"
+              className="inline-flex items-center gap-2 px-7 py-3 rounded-xl border border-violet-500/25 bg-violet-500/5 hover:bg-violet-500/15 hover:border-violet-400/40 text-violet-300 hover:text-white font-semibold text-sm transition-all duration-200">
+              Explore All Projects <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════
+              CONTACT / CTA
+         ══════════════════════════════ */}
+      <section id="contact" className="relative z-10 px-6 py-24">
+        <div className="max-w-2xl mx-auto fade-in-up">
+          {/* Card */}
+          <div className="relative rounded-3xl border border-violet-500/20 bg-[#0c0c18]/70 backdrop-blur-xl overflow-hidden p-8 md:p-12">
+            {/* Background glow inside card */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute -top-24 -left-24 w-64 h-64 rounded-full"
+                style={{ background: 'radial-gradient(circle, rgba(109,40,217,0.15) 0%, transparent 70%)' }} />
+              <div className="absolute -bottom-24 -right-24 w-64 h-64 rounded-full"
+                style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.10) 0%, transparent 70%)' }} />
+            </div>
 
             <div className="relative">
               <div className="text-center mb-10">
-                <h2 className="text-4xl md:text-5xl font-bold mb-4">Ready to Automate?</h2>
-                <p className="text-lg text-gray-300">
-                  Tell us what you need, and we'll build a custom solution for you.
+                <span className="tag-pill mb-4 inline-flex">Let's Work Together</span>
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                  Ready to <span className="gradient-text-bright">Automate?</span>
+                </h2>
+                <p className="text-gray-500 text-base">
+                  Tell us what you need. We'll build a custom solution — typically within 1–2 weeks.
                 </p>
               </div>
 
-              <div className="space-y-6 max-w-2xl mx-auto">
-                {/* Name Field */}
-                <div>
-                  <label htmlFor="name" className="block text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    placeholder="John Doe"
-                  />
+              {formStatus === 'success' ? (
+                <div className="text-center py-10">
+                  <CheckCircle2 className="w-14 h-14 text-violet-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-white mb-2">Message Received!</h3>
+                  <p className="text-gray-500 text-sm">We'll reach out within 24 hours. No commitments required.</p>
+                  <button onClick={() => setFormStatus(null)} className="mt-6 px-6 py-2.5 rounded-xl border border-violet-500/25 text-violet-300 hover:text-white text-sm transition-colors">
+                    Send another →
+                  </button>
                 </div>
+              ) : (
+                <div className="space-y-5">
+                  {/* Name */}
+                  <div>
+                    <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                      <User className="w-3.5 h-3.5" /> Your Name
+                    </label>
+                    <input
+                      type="text" value={formData.name}
+                      onChange={e => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="John Doe"
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder-gray-600 text-sm transition-all focus:border-violet-500/50 focus:bg-white/[0.06]"
+                    />
+                  </div>
 
-                {/* Email Field */}
-                <div>
-                  <label htmlFor="email" className="block text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
-                    <AtSign className="w-4 h-4" />
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    placeholder="john@company.com"
-                  />
+                  {/* Email */}
+                  <div>
+                    <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                      <AtSign className="w-3.5 h-3.5" /> Email Address
+                    </label>
+                    <input
+                      type="email" value={formData.email}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="john@company.com"
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder-gray-600 text-sm transition-all focus:border-violet-500/50 focus:bg-white/[0.06]"
+                    />
+                  </div>
+
+                  {/* Details */}
+                  <div>
+                    <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                      <Zap className="w-3.5 h-3.5" /> What to Automate <span className="text-gray-600 lowercase font-normal tracking-normal">(optional)</span>
+                    </label>
+                    <textarea
+                      rows={4} value={formData.automation}
+                      onChange={e => setFormData({ ...formData, automation: e.target.value })}
+                      placeholder="e.g. 'Automate my lead follow-up emails and CRM updates...'"
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder-gray-600 text-sm resize-none transition-all focus:border-violet-500/50 focus:bg-white/[0.06]"
+                    />
+                  </div>
+
+                  {formStatus === 'error' && (
+                    <p className="text-red-400 text-sm text-center">Something went wrong. Email us directly instead.</p>
+                  )}
+
+                  <button
+                    onClick={handleSubmit}
+                    disabled={formStatus === 'sending'}
+                    className="btn-primary w-full py-3.5 rounded-xl bg-violet-600 hover:bg-violet-500 font-semibold text-base flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {formStatus === 'sending' ? (
+                      <>Sending… <span className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full inline-block" /></>
+                    ) : (
+                      <>Get Started <Send className="w-4 h-4" /></>
+                    )}
+                  </button>
+
+                  <p className="text-center text-xs text-gray-600">
+                    We respond within 24 hours · No spam, ever · No commitment required
+                  </p>
                 </div>
-
-                {/* Optional Automation Details */}
-                <div>
-                  <label htmlFor="automation" className="block text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
-                    <Zap className="w-4 h-4" />
-                    What are you looking to automate? <span className="text-gray-500 font-normal">(Optional)</span>
-                  </label>
-                  <textarea
-                    id="automation"
-                    rows="4"
-                    value={formData.automation}
-                    onChange={(e) => setFormData({ ...formData, automation: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
-                    placeholder="Tell us about your automation needs... (e.g., 'I want to automate my email marketing campaigns and lead follow-ups')"
-                  />
-                </div>
-
-                {/* Submit Button */}
-                <button
-                  onClick={handleSubmit}
-                  className="w-full px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
-                >
-                  Get Started <Send className="w-5 h-5" />
-                </button>
-
-                <p className="text-center text-sm text-gray-400 mt-4">
-                  We typically respond within 24 hours. No commitment required.
-                </p>
-              </div>
+              )}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="relative z-10 px-6 py-8 border-t border-white/10">
-        <div className="max-w-7xl mx-auto text-center text-gray-400">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Sparkles className="w-5 h-5 text-purple-400" />
-            <span className="text-lg font-bold text-white">Krido Automations</span>
+      {/* ══════════════════════════════
+                FOOTER
+         ══════════════════════════════ */}
+      <footer className="relative z-10 px-6 py-10 border-t border-white/[0.05]">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Logo */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center">
+              <Sparkles className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="text-sm font-semibold">
+              <span className="gradient-text-bright">Krido</span>
+              <span className="text-white/60"> Automations</span>
+            </span>
           </div>
-          <p className="mb-2 text-sm">Automating the future, one workflow at a time.</p>
-          <p className="text-xs">© 2025 Krido Automations. All rights reserved.</p>
+
+          <p className="text-gray-600 text-sm">Automating the future, one workflow at a time.</p>
+
+          <p className="text-gray-700 text-xs">© 2025 Krido Automations. All rights reserved.</p>
         </div>
       </footer>
     </div>

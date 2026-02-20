@@ -1,155 +1,146 @@
-# Krido Automations Website
+# Krido Automations
 
-Custom-built automation agency website built with React, Tailwind CSS, and lucide-react icons.
+> AI-powered business automation — email outreach, WhatsApp bots, medical AI, and custom workflow systems.
 
-## 🚀 Deployment Instructions
-
-### Step 1: Push to GitHub
-
-1. Create a new repository on [GitHub](https://github.com/new):
-   - Name it `krido-automations`
-   - Set it as **Public** or **Private**
-   - DO NOT initialize with README (we already have files)
-
-2. Connect your local repository to GitHub:
-   ```bash
-   cd "/Users/apple/Desktop/Jash Projects/krido-website"
-   git remote add origin https://github.com/YOUR_USERNAME/krido-automations.git
-   git branch -M main
-   git push -u origin main
-   ```
-
-   **Note:** Replace `YOUR_USERNAME` with your actual GitHub username.
-
-### Step 2: Deploy to Vercel
-
-1. Go to [vercel.com](https://vercel.com) and sign in with your GitHub account
-
-2. Click **"New Project"**
-
-3. Import the `krido-automations` repository you just created
-
-4. Vercel will auto-detect the React configuration:
-   - Framework Preset: **Create React App**
-   - Build Command: `npm run build`
-   - Output Directory: `build`
-
-5. Click **"Deploy"**
-
-6. Your site will be live at: `https://krido-automations.vercel.app`
-
-### Step 3: Future Updates
-
-To make changes to your live website:
-
-```bash
-# Make your code changes locally
-# Test them first
-npm start
-
-# Then commit and push to GitHub
-git add .
-git commit -m "Description of your changes"
-git push origin main
-
-# Vercel will automatically deploy in ~60 seconds
-```
-
-## 📧 Form Setup (Web3Forms)
-
-The contact form is integrated with Web3Forms for handling submissions.
-
-1. Sign up at [web3forms.com](https://web3forms.com)
-
-2. Get your Access Key from the dashboard
-
-3. Update the form handler in `src/App.js`:
-   - Find line ~117: `access_key: 'YOUR_WEB3FORMS_ACCESS_KEY_HERE'`
-   - Replace with your actual access key
-
-4. Commit and push the change:
-   ```bash
-   git add src/App.js
-   git commit -m "Add Web3Forms access key"
-   git push origin main
-   ```
-
-**Features:**
-- Free tier: 250 submissions/month
-- Submissions sent to your registered email
-- Built-in spam protection
-
-## 🎥 Video Testimonial Setup
-
-To add a YouTube video testimonial:
-
-1. Upload your video to YouTube and set visibility to **"Unlisted"**
-
-2. Get the video ID from the URL:
-   - Example: `https://www.youtube.com/watch?v=dQw4w9WgXcQ`
-   - Video ID: `dQw4w9WgXcQ`
-
-3. Update `src/App.js` (around line 70):
-   ```javascript
-   {
-     type: 'video',
-     videoId: 'YOUR_YOUTUBE_VIDEO_ID',  // Replace with your video ID
-     author: "Michael Chen",
-     role: "Operations Director",
-     company: "DataSync Pro"
-   }
-   ```
-
-4. Commit and push the change
-
-## 🛠️ Local Development
-
-Install dependencies:
-```bash
-npm install
-```
-
-Run development server:
-```bash
-npm start
-```
-
-Build for production:
-```bash
-npm run build
-```
-
-## 📁 Project Structure
-
-```
-krido-website/
-├── public/
-│   └── index.html          # HTML template
-├── src/
-│   ├── App.js              # Main component
-│   ├── index.js            # React entry point
-│   └── index.css           # Tailwind CSS imports
-├── package.json            # Dependencies
-├── tailwind.config.js      # Tailwind configuration
-└── postcss.config.js       # PostCSS configuration
-```
-
-## 💡 Key Features
-
-- ✨ Modern, animated gradient background
-- 📱 Fully responsive design
-- 🎨 Tailwind CSS for styling
-- 🔄 Auto-rotating testimonials
-- 📧 Integrated contact form
-- 🎥 Video testimonial support
-- 🚀 Fast deployment with Vercel
-
-## 🔗 Important Links
-
-- **Web3Forms Dashboard:** https://web3forms.com/dashboard
-- **Vercel Dashboard:** https://vercel.com/dashboard
-- **GitHub Repository:** (Add after creating)
+**Live site:** _(add your Vercel URL here after deployment)_
 
 ---
 
-Built with ❤️ using React and Tailwind CSS
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| UI Framework | React 18 |
+| Styling | Tailwind CSS v3 + custom CSS |
+| Routing | React Router v7 |
+| Icons | Lucide React |
+| Email / Contact Form | Web3Forms |
+| Deployment | Vercel |
+
+---
+
+## Project Structure
+
+```
+krido-automations/
+├── public/
+│   └── index.html          # HTML shell + SEO meta tags
+├── src/
+│   ├── data.js             # ← ALL CONTENT LIVES HERE (edit this)
+│   ├── App.js              # Homepage
+│   ├── Projects.js         # /projects page
+│   ├── index.js            # React entry + Router setup
+│   └── index.css           # Global styles + animations
+├── vercel.json             # Vercel SPA routing config (required)
+├── tailwind.config.js      # Tailwind theme extensions
+└── package.json
+```
+
+---
+
+## Managing Content
+
+**One file to edit for all content:** `src/data.js`
+
+### Add a Testimonial
+
+Open `src/data.js` and paste a new block inside the `testimonials` array:
+
+```js
+{
+  content: "Client quote here...",
+  author: "Full Name",
+  role: "Job Title",
+  company: "Company Name",  // leave "" if no company
+  rating: 5,
+},
+```
+
+### Add a Project
+
+Paste a new block inside the `projects` array:
+
+```js
+{
+  id: 4,                              // increment the id
+  category: "Workflow Automation",    // see categories below
+  client: "Client Name",
+  title: "Project Title",
+  subtitle: "One-line summary.",
+  description: "3–4 sentences about what was built and the outcome.",
+  tags: ["n8n", "Gmail", "Gemini"],
+  date: "Jun 2025",
+  gradient: "from-violet-600 via-purple-700 to-indigo-800",
+  visual: "workflow",     // 'email' | 'chatbot' | 'workflow' | 'seo'
+  screenshot: null,       // or '/images/your-screenshot.png'
+  stat1: { label: "Hours saved / week", value: "20+" },
+  stat2: { label: "ROI", value: "4×" },
+},
+```
+
+**Available categories:** `Workflow Automation` · `Python Automation` · `Email Automation` · `AI Agent` · `SEO & Marketing`
+
+### Add a Real Screenshot
+
+1. Drop your image into `public/images/` (create the folder if needed)
+2. In `data.js`, set `screenshot: '/images/your-filename.png'` on that project
+
+### Change Homepage Featured Projects
+
+Edit `featuredProjectIds` at the bottom of `data.js` to control which 3 projects appear in the "What We've Built" section:
+
+```js
+export const featuredProjectIds = [1, 2, 3]; // use any project ids
+```
+
+---
+
+## Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server (http://localhost:3000)
+npm start
+
+# Production build
+npm run build
+```
+
+---
+
+## Deploying to Vercel
+
+### First deployment
+
+1. Push this repo to GitHub
+2. Go to [vercel.com](https://vercel.com) → **Add New Project**
+3. Import your GitHub repository
+4. Vercel auto-detects Create React App — no config needed
+5. Click **Deploy**
+
+The `vercel.json` file in the root handles client-side routing so that direct visits to `/projects` work correctly.
+
+### Subsequent deployments
+
+Just push to your GitHub main branch — Vercel auto-deploys on every push.
+
+---
+
+## Contact Form Setup
+
+The contact form uses [Web3Forms](https://web3forms.com) (free, no backend required).
+
+The access key is already configured in `src/App.js`. To change it:
+
+1. Go to [web3forms.com](https://web3forms.com) → get a free access key
+2. In `src/App.js`, find the `handleSubmit` function and replace the `access_key` value
+
+---
+
+## Environment Notes
+
+- No `.env` file is needed — there are no secrets in this project
+- The build output goes to `/build` (excluded from git via `.gitignore`)
+- `node_modules` is excluded from git — run `npm install` after cloning
