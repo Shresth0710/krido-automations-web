@@ -31,15 +31,15 @@ export const testimonials = [
     {
         content:
             "Earlier, our team was spending nearly 20 hours a week sending 1,000+ emails manually. Krido automated the entire process end-to-end, saving us significant time and bringing real structure and efficiency to our outreach.",
-        author: "Connor Thomas",
+        author: "Connor",
         role: "Founder",
-        company: "CST3 Media",
+        company: "Marketing Agency",
         rating: 5,
     },
     {
         content:
             "Krido built a fully customized WhatsApp bot for us that sends repeated, personalized messages on a predefined schedule. It has streamlined our communication and saved us 10+ hours every week.",
-        author: "Muller Istevan",
+        author: "Muller",
         role: "Founder",
         company: "",
         rating: 5,
@@ -47,9 +47,9 @@ export const testimonials = [
     {
         content:
             "Krido automated our entire medical surgery documentation workflow. They built a system that accurately summarizes each medical log and automatically delivers it via email — eliminating manual effort and ensuring timely, consistent communication. It has significantly improved our operational efficiency.",
-        author: "Raj Maturi",
+        author: "Raj",
         role: "MD",
-        company: "Retina Partners Midwest & Midwest Eye Institute",
+        company: "Medical Eye Clinic",
         rating: 5,
     },
     // ── ADD MORE TESTIMONIALS BELOW ─────────────
@@ -83,7 +83,7 @@ export const projects = [
     {
         id: 1,
         category: "Workflow Automation",
-        client: "Connor Thomas",
+        client: "Connor",
         title: "Email Outreach Automation",
         subtitle: "Intelligent outreach automation with real-time personalization.",
         description:
@@ -99,7 +99,7 @@ export const projects = [
     {
         id: 2,
         category: "Python Automation",
-        client: "Raj Maturi",
+        client: "Raj",
         title: "Automated Medical AI Summarization",
         subtitle: "AI-powered clinical documentation and secure record enhancement.",
         description:
@@ -115,7 +115,7 @@ export const projects = [
     {
         id: 3,
         category: "Workflow Automation",
-        client: "Muller Istevan",
+        client: "Muller",
         title: "Personalized WhatsApp Chat Sender",
         subtitle: "Structured WhatsApp automation with response capture and timestamp tracking.",
         description:
